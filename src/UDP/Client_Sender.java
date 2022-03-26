@@ -2,55 +2,71 @@ package UDP;
 
 import java.io.IOException;
 import java.net.*;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Scanner;
 
-
 public class Client_Sender {
-    public static void main(String[] args) throws IOException {
+    public static int entradanointervalo() {
+        Scanner entrada = new Scanner(System.in);
+        int numero = entrada.nextInt();
+        if (numero >= 6 || numero <=0) {
+            System.out.println("Valor invalido. Tente novamente");
+            entradanointervalo();
+        } else
+            return numero;
+        return numero;
+    }
 
+    public static void main(String[] args) throws IOException {
         HashMap<Integer, String> opcoes = new HashMap<>();
+        ArrayList<String> entradas = new ArrayList<>();
         opcoes.put(1, "Lento");
+        opcoes.put(2, "Perda");
+        opcoes.put(3, "Fora de ordem");
+        opcoes.put(4, "Duplicada");
+        opcoes.put(5, "Fora de ordem]");
+
 
         while (true) {
             try {
                 DatagramSocket clientSocket = new DatagramSocket();
                 String host = "127.0.0.1";
                 String mensagemASerEnviada;
-                int identificador = 0;
-
 
                 InetAddress ipAdress = InetAddress.getByName(host);
 
-                System.out.println("Sender");
-
-                byte[] sendData = new byte[1024];
-                //sendData = "Sou um cliente".getBytes();
+                System.out.println("Sender inicio");
 
                 Scanner lerTeclado = new Scanner(System.in);
                 mensagemASerEnviada = lerTeclado.next();
+                entradas.add(mensagemASerEnviada);
 
+                byte[] sendData = new byte[1024];
                 sendData = mensagemASerEnviada.getBytes();
-
-                String mensagemEnviada = new String(sendData);
-                System.out.println("Mensagem enviada para o receiver: " + mensagemEnviada + "\n");
-
                 DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, ipAdress, 9876);
                 clientSocket.send(sendPacket);
 
-                System.out.println("Opções de envio: \n" +
-                        "1. Lento \n" +
-                        "2. Perda \n" +
-                        "3. Fora de ordem \n" +
-                        "4. Duplicada \n" +
-                        "5. Normal"
+                String mensagemEnviada = new String(sendData);
+                System.out.println("Mensagem enviada para o receiver: " + mensagemEnviada + "\n");
+                System.out.println("""
+                        Opções de envio:\s
+                        1. Lento\s
+                        2. Perda\s
+                        3. Fora de ordem\s
+                        4. Duplicada\s
+                        5. Normal\n"""
                 );
 
-                int opcaoEnvio = lerTeclado.nextInt();
+                int opcaoEnvio = entradanointervalo();
+                String mensagemObtidaPelasEntradas = "\nOpcao escolhida " + opcaoEnvio + " enviada como " + opcoes.get(opcaoEnvio) + " com id " + entradas.indexOf(mensagemEnviada);
 
-                System.out.println("Sender. Opcao escolhida : " + opcaoEnvio + "enviada como " + opcoes.get(opcaoEnvio));
+                byte [] sendDataByte;
+                sendDataByte = mensagemObtidaPelasEntradas.getBytes();
+                DatagramPacket sendDataObtida = new DatagramPacket(sendDataByte, sendDataByte.length, ipAdress, 9876);
+                clientSocket.send(sendDataObtida);
 
-                System.out.println("Mensagem " + mensagemEnviada);
+                System.out.println(mensagemObtidaPelasEntradas);
 
                 byte[] recBuffer = new byte[1024];
                 DatagramPacket recPkt = new DatagramPacket(recBuffer, recBuffer.length);
@@ -60,7 +76,6 @@ public class Client_Sender {
                 System.out.println("'Recebido do servidor: " + informacao);
 
                 clientSocket.close();
-
             } catch (IOException ignored) {
             }
         }
