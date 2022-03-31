@@ -1,43 +1,78 @@
 package UDP;
 
 import java.io.IOException;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.InetAddress;
+import java.net.*;
+import java.util.Scanner;
 
-public class Server_Receiver {
-    public static void main(String[] args) {
-        try {
-            DatagramSocket serverSocket = new DatagramSocket(9876);
+public class Server_Receiver extends Thread {
 
-            while (true) {
-                byte[] recBuffer = new byte[1024];
+    private static final int PORT = 9876;
+    public DatagramSocket datagramSocket;
+    public int port;
+    public String info;
+    public InetAddress ip;
 
-                System.out.println("Server inicio");
+    public Server_Receiver(DatagramSocket datagramSocket, DatagramPacket datagramPacket, byte[] infoBytes) {
+        this.datagramSocket = datagramSocket;
+        this.info = new String(infoBytes, 0, datagramPacket.getLength());
+        this.port = datagramPacket.getPort();
+        this.ip = datagramPacket.getAddress();
+    }
 
-                DatagramPacket recPkt = new DatagramPacket(recBuffer, recBuffer.length);
-                serverSocket.receive(recPkt);
-                String informacao = new String(recPkt.getData(), recPkt.getOffset(), recPkt.getLength());
-                System.out.println("Mensagem recebida do sender: " + informacao);
+//    public static String leEntradausuario() {
+//        String mensagemASerEnviada;
+//
+//        Scanner lerTeclado = new Scanner(System.in);
+//        mensagemASerEnviada = lerTeclado.next();
+//        return mensagemASerEnviada;
+//    }
+//
+//    public static String recebeMensagem(DatagramSocket datagramSocket) throws IOException {
+//        String host = "127.0.0.1";
+//
+//        byte[] recBuffer = new byte[1024];
+//        DatagramPacket receivedPackage = new DatagramPacket(recBuffer, recBuffer.length);
+//        datagramSocket.receive(receivedPackage);
+//
+//        String informacaoRecebida = new String(receivedPackage.getData(), receivedPackage.getOffset(), receivedPackage.getLength());
+//        System.out.println(informacaoRecebida);
+//        return "";
+//    }
+//
+//    public static void enviaMensagem(String mensagemASerEnviada, DatagramSocket datagramSocket) throws
+//            IOException {
+//        String host = "127.0.0.1";
+//        InetAddress ipAdress = InetAddress.getByName(host);
+//
+//        DatagramSocket serverSocket = new DatagramSocket();
+//        byte[] sendData = new byte[1024];
+//        sendData = mensagemASerEnviada.getBytes();
+//        DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, ipAdress, 9876);
+//        serverSocket.send(sendPacket);
+//
+//        String mensagemEnviada = new String(sendData);
+//        //System.out.println("Mensagem enviada para o Sender: " + mensagemEnviada + "\n");
+//    }
 
-                byte[] sendBuf = new byte[1024];
-                sendBuf = "Sou o servidor".getBytes();
+    public static void main(String[] args) throws Exception {
 
-                InetAddress ipAddress = recPkt.getAddress();
-                int port = recPkt.getPort();
+        DatagramSocket datagramSocket = new DatagramSocket(PORT);
+        byte[] infoBytes = new byte[1024];
+        System.out.println("Server esta rodando");
 
-                DatagramPacket sendPacket = new DatagramPacket(sendBuf, sendBuf.length, ipAddress, port);
-                serverSocket.send(sendPacket);
+        while (true) {
+            try {
+                 DatagramPacket datagramPacket = new DatagramPacket(infoBytes, infoBytes.length);
 
-                DatagramPacket recPkt2 = new DatagramPacket(recBuffer, recBuffer.length);
-                serverSocket.receive(recPkt2);
-                String informacao2 = new String(recPkt2.getData(), recPkt2.getOffset(), recPkt2.getLength());
-                System.out.println("Mensagem recebida do sender: " + informacao2);
-                System.out.println("Mensagem enviada pelo servidor: " + new String(sendPacket.getData()));
+                //Recebe dados
+                datagramSocket.receive(datagramPacket);
 
+                //Após receber inicia thread
+                Mensagem thread = new Mensagem(datagramPacket, datagramSocket, infoBytes);
+                thread.start();
+            } catch (Exception e) {
+                throw new Exception(e.fillInStackTrace());
             }
-        } catch (IOException e) {
-            e.printStackTrace();
         }
     }
 }

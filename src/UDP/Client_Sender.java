@@ -1,83 +1,135 @@
 package UDP;
 
-import java.io.IOException;
+import java.io.*;
 import java.net.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Scanner;
 
 public class Client_Sender {
-    public static int entradanointervalo() {
-        Scanner entrada = new Scanner(System.in);
-        int numero = entrada.nextInt();
-        if (numero >= 6 || numero <=0) {
-            System.out.println("Valor invalido. Tente novamente");
-            entradanointervalo();
-        } else
-            return numero;
-        return numero;
-    }
+
+    private final static int PORT = 9876;
+    public static String host = "127.0.0.1";
+    static String buf;
+
+//    public static String EntradaNoIntervalo(String valorInserido) {
+//        Scanner entrada = new Scanner(System.in);
+//        valorInserido = entrada.next();
+//        int numeroInserido = Integer.parseInt(valorInserido);
+//        if (numeroInserido >= 6 || numeroInserido <= 0) {
+//            System.out.println("Valor invalido. Tente novamente");
+//            return EntradaNoIntervalo(valorInserido);
+//        } else
+//            System.out.println("Numero inserido no intervalo possível");
+//        return valorInserido;
+//    }
+//
+//    public static String LeEntradausuario() {
+//        String mensagemASerEnviada;
+//
+//        Scanner lerTeclado = new Scanner(System.in);
+//        mensagemASerEnviada = lerTeclado.next();
+//        return mensagemASerEnviada;
+//    }
+//
+//
+//    public static void enviaMensagem(String mensagemASerEnviada, DatagramSocket datagramSocket) throws IOException {
+//        String host = "127.0.0.1";
+//        InetAddress ipAdress = InetAddress.getByName(host);
+//
+//        DatagramSocket clientSocket = new DatagramSocket();
+//        byte[] sendData = new byte[1024];
+//        sendData = mensagemASerEnviada.getBytes();
+//        DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, ipAdress, 9876);
+//        clientSocket.send(sendPacket);
+//    }
+//
+//    public static String recebeMensagem(DatagramSocket datagramSocket) throws IOException {
+//        String host = "127.0.0.1";
+//
+//        byte[] recBuffer = new byte[1024];
+//        DatagramPacket receivedPackage = new DatagramPacket(recBuffer, recBuffer.length);
+//        datagramSocket.receive(receivedPackage);
+//
+//        String informacaoRecebida = new String(receivedPackage.getData(), receivedPackage.getOffset(), receivedPackage.getLength());
+//        return informacaoRecebida;
+//    }
 
     public static void main(String[] args) throws IOException {
-        HashMap<Integer, String> opcoes = new HashMap<>();
-        ArrayList<String> entradas = new ArrayList<>();
-        opcoes.put(1, "Lento");
-        opcoes.put(2, "Perda");
-        opcoes.put(3, "Fora de ordem");
-        opcoes.put(4, "Duplicada");
-        opcoes.put(5, "Fora de ordem]");
 
+        //Cria socket
+        DatagramSocket clientSocket = new DatagramSocket();
 
-        while (true) {
-            try {
-                DatagramSocket clientSocket = new DatagramSocket();
-                String host = "127.0.0.1";
-                String mensagemASerEnviada;
+        BufferedReader entrada = new BufferedReader(new InputStreamReader(System.in));
 
-                InetAddress ipAdress = InetAddress.getByName(host);
+        //Seta o ip
+        InetAddress ip = InetAddress.getByName(host);
 
-                System.out.println("Sender inicio");
+        //Cliente rodando
+        System.out.println("Cliente rodando");
 
-                Scanner lerTeclado = new Scanner(System.in);
-                mensagemASerEnviada = lerTeclado.next();
-                entradas.add(mensagemASerEnviada);
+        //Create datapackage
+        //DatagramPacket(Byte[] buf, int  length, Inetddress address, int port
+        //Client.connet(ip, port)
 
-                byte[] sendData = new byte[1024];
-                sendData = mensagemASerEnviada.getBytes();
-                DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, ipAdress, 9876);
-                clientSocket.send(sendPacket);
+        while ((buf = entrada.readLine()) != null) {
 
-                String mensagemEnviada = new String(sendData);
-                System.out.println("Mensagem enviada para o receiver: " + mensagemEnviada + "\n");
-                System.out.println("""
-                        Opções de envio:\s
-                        1. Lento\s
-                        2. Perda\s
-                        3. Fora de ordem\s
-                        4. Duplicada\s
-                        5. Normal\n"""
-                );
+            //Cria dataPackage
+            byte[] sendBuf = buf.getBytes();
+            DatagramPacket sendPacket = new DatagramPacket(sendBuf, sendBuf.length, ip, PORT);
 
-                int opcaoEnvio = entradanointervalo();
-                String mensagemObtidaPelasEntradas = "\nOpcao escolhida " + opcaoEnvio + " enviada como " + opcoes.get(opcaoEnvio) + " com id " + entradas.indexOf(mensagemEnviada);
+            //Envia pacote
+            clientSocket.send(sendPacket);
 
-                byte [] sendDataByte;
-                sendDataByte = mensagemObtidaPelasEntradas.getBytes();
-                DatagramPacket sendDataObtida = new DatagramPacket(sendDataByte, sendDataByte.length, ipAdress, 9876);
-                clientSocket.send(sendDataObtida);
+            //Recebe mensagem
+            byte[] receiveBuf = new byte[1024];
+            DatagramPacket receivePacket = new DatagramPacket(receiveBuf, receiveBuf.length);
+            clientSocket.receive(receivePacket);
 
-                System.out.println(mensagemObtidaPelasEntradas);
-
-                byte[] recBuffer = new byte[1024];
-                DatagramPacket recPkt = new DatagramPacket(recBuffer, recBuffer.length);
-
-                clientSocket.receive(recPkt);
-                String informacao = new String(recPkt.getData(), recPkt.getOffset(), recPkt.getLength());
-                System.out.println("'Recebido do servidor: " + informacao);
-
-                clientSocket.close();
-            } catch (IOException ignored) {
-            }
+            //Imprime mensagem recebida
+            byte[] bufReceive = receivePacket.getData();
+            int len = receivePacket.getLength();
+            String resultado = new String(bufReceive, 0, len);
+            System.out.println(resultado);
         }
+        //Fecha socket
+        clientSocket.close();
+        entrada.close();
+
+
+//        int contador = 0;
+//        ArrayList<String> entradas = new ArrayList<>();
+//        ArrayList<String> opcaoEscolhida = new ArrayList<>();
+//        String host = "127.0.0.1";
+//        InetAddress ipAdress = InetAddress.getByName(host);
+//        DatagramSocket clientSocket = new DatagramSocket();
+//        Socket socket = new Socket(host, 9876);
+//        System.out.println("Client iniciou");
+//
+//        HashMap<Integer, String> opcoes = new HashMap<>();
+//        opcoes.put(1, "Lento");
+//        opcoes.put(2, "Perda");
+//        opcoes.put(3, "Fora de ordem");
+//        opcoes.put(4, "Duplicada");
+//        opcoes.put(5, "Fora de ordem");
+//
+//        while (true) {
+//            entradas.add(LeEntradausuario());
+//            System.out.println("""
+//                    Opções de envio:\s
+//                    1. Lento\s
+//                    2. Perda\s
+//                    3. Fora de ordem\s
+//                    4. Duplicada\s
+//                    5. Normal\n"""
+//            );
+//            opcaoEscolhida.add(LeEntradausuario());
+//            String mensagemASerEnviada = "Mensagem " + entradas.get(contador) + " enviada como " + opcoes.get(Integer.parseInt(opcaoEscolhida.get(contador))) + " com id " + contador;
+//            enviaMensagem(mensagemASerEnviada, clientSocket);
+//            contador++;
+//            System.out.println(recebeMensagem(clientSocket));
+//            clientSocket.setSoTimeout(1000);
+//            clientSocket.close();
     }
 }
+
