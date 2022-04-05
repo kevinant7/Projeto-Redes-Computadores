@@ -1,8 +1,10 @@
 package UDP;
 
+import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.util.ArrayList;
 
 public class Mensagem extends Thread {
 
@@ -13,6 +15,7 @@ public class Mensagem extends Thread {
     public String info;
     public int port;
     public InetAddress ip;
+    public static int contador = 0;
 
     public Mensagem(DatagramPacket datagramPacket, DatagramSocket datagramSocket, byte[] infoBytes) {
         this.datagramSocket = datagramSocket;
@@ -28,11 +31,23 @@ public class Mensagem extends Thread {
 
         super.run();
 
-        System.out.println("Ciente-" + ip + "port=" + port + "say: " + info);
+        ArrayList<String> mensagem = new ArrayList<>();
+        ArrayList<String> opcao = new ArrayList<>();
 
-        //Responde com a mensagem recebida
-        byte[] echobuf = ("Server recebeu: " + info).getBytes();
-        DatagramPacket sendPacket = new DatagramPacket(echobuf, echobuf.length, ip, port);
+        //Recebe a mensagem
+
+        mensagem.add(info);
+
+        System.out.println(info);
+        System.out.println(mensagem.get(0));
+
+        //Recebe a opcao
+        //opcao.add(info);
+
+        // System.out.println("Ciente-" + ip + "port=" + port + "say: Opcao " + opcao.get(contador));
+
+        byte[] buf = ("Recebido").getBytes();
+        DatagramPacket sendPacket = new DatagramPacket(buf, buf.length, ip, port);
 
         try {
             datagramSocket.send(sendPacket);

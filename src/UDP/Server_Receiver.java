@@ -55,21 +55,23 @@ public class Server_Receiver extends Thread {
 //    }
 
     public static void main(String[] args) throws Exception {
-
-        DatagramSocket datagramSocket = new DatagramSocket(PORT);
+        String host = "127.0.0.1";
+        InetAddress ipAdress = InetAddress.getByName(host);
+        DatagramSocket serverSocket = new DatagramSocket(PORT);
         byte[] infoBytes = new byte[1024];
         System.out.println("Server esta rodando");
 
         while (true) {
             try {
-                 DatagramPacket datagramPacket = new DatagramPacket(infoBytes, infoBytes.length);
+                DatagramPacket receiveData = new DatagramPacket(infoBytes, infoBytes.length);
 
                 //Recebe dados
-                datagramSocket.receive(datagramPacket);
+                serverSocket.receive(receiveData);
 
                 //Após receber inicia thread
-                Mensagem thread = new Mensagem(datagramPacket, datagramSocket, infoBytes);
+                Mensagem thread = new Mensagem(receiveData, serverSocket, infoBytes);
                 thread.start();
+
             } catch (Exception e) {
                 throw new Exception(e.fillInStackTrace());
             }
