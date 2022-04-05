@@ -12,16 +12,6 @@ public class Client_Sender {
     static String buf;
     public static int contador = 0;
 
-    public String EntradaNoIntervalo(String valorInserido) {
-        int numeroInserido = Integer.parseInt(valorInserido);
-        if (numeroInserido >= 6 || numeroInserido <= 0) {
-            System.out.println("Valor invalido. Tente novamente");
-            return EntradaNoIntervalo(valorInserido);
-        } else
-            System.out.println("Numero inserido no intervalo possível");
-        return valorInserido;
-    }
-
     public static void main(String[] args) throws IOException {
         ArrayList<String> mensagemUsuario = new ArrayList<>();
         ArrayList<String> opcaoEscolhida = new ArrayList<>();
