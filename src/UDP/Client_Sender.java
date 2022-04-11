@@ -44,11 +44,11 @@ public class Client_Sender {
 
             //Mostra opcoes
             System.out.println("""
-                    Opções de envio:\s
-                    1. Lento\s
-                    2. Perda\s
-                    3. Fora de ordem\s
-                    4. Duplicada\s
+                    Opcoes de envio:
+                    1. Lento
+                    2. Perda
+                    3. Fora de ordem
+                    4. Duplicada
                     5. Normal
                     """
             );
