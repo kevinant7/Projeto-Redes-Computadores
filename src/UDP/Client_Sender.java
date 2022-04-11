@@ -43,14 +43,12 @@ public class Client_Sender {
             clientSocket.send(sendPacket);
 
             //Mostra opcoes
-            System.out.println("""
-                    Opcoes de envio:
-                    1. Lento
-                    2. Perda
-                    3. Fora de ordem
-                    4. Duplicada
-                    5. Normal
-                    """
+            System.out.println("Opcoes de envio: " +
+                    "\n 1. Lento" +
+                    "\n 2. Perda" +
+                    "\n 3. Fora de ordem" +
+                    "\n 4. Duplicada" +
+                    "\n 5. Normal"
             );
 
             //Le opcao escolhida
@@ -67,22 +65,35 @@ public class Client_Sender {
             System.out.println(mensagemFormatada);
 
             //Recebe Resposta
-            try {
-                clientSocket.setSoTimeout(5000);
-                byte[] receiveBuf = new byte[1024];
-                DatagramPacket receivePacket = new DatagramPacket(receiveBuf, receiveBuf.length);
-                clientSocket.receive(receivePacket);
-                System.out.println("Mensagem id " + contador + " recebida pelo receiver");
-            } catch (SocketTimeoutException e) {
-                System.out.println("Reenviar o pacote");
+            switch (opcaoEscolhida.get(contador)) {
+                case "1":
+                    System.out.println("Lento");
+                    break;
+                case "2":
+                    try {
+                        clientSocket.setSoTimeout(5000);
+                        byte[] receiveBuf = new byte[1024];
+                        DatagramPacket receivePacket = new DatagramPacket(receiveBuf, receiveBuf.length);
+                        clientSocket.receive(receivePacket);
+                        System.out.println("Mensagem id " + contador + " recebida pelo receiver");
+                    } catch (SocketTimeoutException e) {
+                        System.out.println("Perda de pacote");
+                    }
+                    break;
+                case "3":
+                    System.out.println("Fora de ordem");
+                    break;
+                case "4":
+                    System.out.println("Duplicada");
+                    break;
+                case "5":
+                    clientSocket.setSoTimeout(5000);
+                    byte[] receiveBuf = new byte[1024];
+                    DatagramPacket receivePacket = new DatagramPacket(receiveBuf, receiveBuf.length);
+                    clientSocket.receive(receivePacket);
+                    System.out.println("Mensagem id " + contador + " recebida pelo receiver");
+                    break;
             }
-
-            //Imprime mensagem recebida
-            //byte[] bufReceive = receivePacket.getData();
-            //int len = receivePacket.getLength();
-            //String resultado = new String(bufReceive, 0, len);
-            //System.out.println(resultado);
-
             //Contador de entrada
             contador++;
         }
