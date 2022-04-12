@@ -37,8 +37,6 @@ public class Server_Receiver extends Thread {
                 Mensagem thread = new Mensagem(mensagem, opcaoEscolhida, serverSocket, infoBytes, infoBytes2);
                 thread.start();
 
-                //Recebe dados
-                serverSocket.receive(mensagem);
 
             } catch (Exception e) {
                 throw new Exception(e.fillInStackTrace());

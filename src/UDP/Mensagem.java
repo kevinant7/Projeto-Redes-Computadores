@@ -33,8 +33,6 @@ public class Mensagem extends Thread {
     public void run() {
         super.run();
 
-        byte[] receiveBuf = new byte[1024];
-        DatagramPacket receivePacket = new DatagramPacket(receiveBuf, receiveBuf.length);
         ArrayList<String> mensagem = new ArrayList<>();
         ArrayList<String> opcao = new ArrayList<>();
 
@@ -43,19 +41,17 @@ public class Mensagem extends Thread {
 
         //Recebe a mensagem
         mensagem.add(mensagemRecebida);
-        System.out.println(mensagem.get(contador));
 
         //Recebe a opcao escolhida
         opcao.add(opcaoEscolhidaRecebida);
-        System.out.println(opcao.get(contador));
 
-        switch (opcao.get(contador)) {
+        switch (opcaoEscolhidaRecebida) {
 
             //Responsavel pela mensagem 1. Lenta
             case "1":
                 System.out.println("Mensagem id " + contador + " recebida na ordem, entregando para a camada de aplicação.");
                 try {
-                    datagramSocket.send(sendPacket);
+                    this.datagramSocket.send(sendPacket);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -88,7 +84,6 @@ public class Mensagem extends Thread {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-
                 contador++;
                 break;
         }
