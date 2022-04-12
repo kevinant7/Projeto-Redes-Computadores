@@ -16,12 +16,15 @@ public class Client_Sender {
         ArrayList<String> mensagemUsuario = new ArrayList<>();
         ArrayList<String> opcaoEscolhida = new ArrayList<>();
 
+        //Cria Array com identificadore das mensagens a serem reenviadas
+        ArrayList<Integer> indiceMensagensPerdias = new ArrayList<>();
+
         HashMap<String, String> opcoes = new HashMap<>();
         opcoes.put("1", "Lento");
         opcoes.put("2", "Perda");
         opcoes.put("3", "Fora de ordem");
         opcoes.put("4", "Duplicada");
-        opcoes.put("5", "Fora de ordem");
+        opcoes.put("5", "Normal");
 
         //Cria socket
         DatagramSocket clientSocket = new DatagramSocket();
@@ -29,9 +32,6 @@ public class Client_Sender {
 
         //Seta o ip
         InetAddress ip = InetAddress.getByName(host);
-
-        //Cliente rodando
-        //System.out.println("Cliente rodando");
 
         //Opcoes que usuario pode escolher
         while ((buf = entrada.readLine()) != null) {
@@ -56,41 +56,56 @@ public class Client_Sender {
             opcaoEscolhida.add(numeroEscolhido);
 
             //Envia a opcao
-            byte[] sendOpcaoByte = numeroEscolhido.getBytes();
+            byte[] sendOpcaoByte = opcaoEscolhida.get(contador).getBytes();
             DatagramPacket sendOpcao = new DatagramPacket(sendOpcaoByte, sendOpcaoByte.length, ip, PORT);
             clientSocket.send(sendOpcao);
 
-            //Formata mensagem
+            //Formata mensagem e imprime no console
             String mensagemFormatada = "Mensagem " + mensagemUsuario.get(contador) + " enviada como " + opcoes.get(opcaoEscolhida.get(contador)) + " com id " + contador;
             System.out.println(mensagemFormatada);
 
-            //Recebe Resposta
+            //Envia e recebe recebe Resposta
             switch (opcaoEscolhida.get(contador)) {
+                //Responsavel pela mensagem 1. Lenta
                 case "1":
-                    System.out.println("Lento");
+                    clientSocket.setSoTimeout(10000);
+                    byte[] receiveBuf1 = new byte[1024];
+                    DatagramPacket receivePacket1 = new DatagramPacket(receiveBuf1, receiveBuf1.length);
+                    clientSocket.receive(receivePacket1);
+                    System.out.println("Mensagem id " + contador + " recebida pelo receiver");
                     break;
+
+                //Responsável pela perda de mensagem. Usando temporizador e timeout
                 case "2":
                     try {
-                        clientSocket.setSoTimeout(5000);
+                        clientSocket.setSoTimeout(6000);
                         byte[] receiveBuf = new byte[1024];
                         DatagramPacket receivePacket = new DatagramPacket(receiveBuf, receiveBuf.length);
                         clientSocket.receive(receivePacket);
                         System.out.println("Mensagem id " + contador + " recebida pelo receiver");
                     } catch (SocketTimeoutException e) {
-                        System.out.println("Perda de pacote");
+                        indiceMensagensPerdias.add(contador);
+                        System.out.println(contador);
                     }
                     break;
+
+                //Responsavel pela mensagem fora de ordem
                 case "3":
-                    System.out.println("Fora de ordem");
                     break;
+
+                //Responsavel pela mensagem 4.duplicada
                 case "4":
-                    System.out.println("Duplicada");
+                    //byte[] sendDuplicadaByte = numeroEscolhido.getBytes();
+                    //DatagramPacket sendDuplicada = new DatagramPacket(sendDuplicadaByte, sendDuplicadaByte.length, ip, PORT);
+                    //clientSocket.send(sendDuplicada);
+                    //clientSocket.send(sendDuplicada);
                     break;
+
+                //Responsavel pelas mensagens 5. normmal
                 case "5":
-                    clientSocket.setSoTimeout(5000);
-                    byte[] receiveBuf = new byte[1024];
-                    DatagramPacket receivePacket = new DatagramPacket(receiveBuf, receiveBuf.length);
-                    clientSocket.receive(receivePacket);
+                    byte[] receiveNormalByte = new byte[1024];
+                    DatagramPacket receiveNormal = new DatagramPacket(receiveNormalByte, receiveNormalByte.length);
+                    clientSocket.receive(receiveNormal);
                     System.out.println("Mensagem id " + contador + " recebida pelo receiver");
                     break;
             }

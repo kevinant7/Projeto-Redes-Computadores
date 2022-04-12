@@ -23,23 +23,22 @@ public class Server_Receiver extends Thread {
         DatagramSocket serverSocket = new DatagramSocket(PORT);
         byte[] infoBytes = new byte[1024];
         byte[] infoBytes2 = new byte[1024];
-        System.out.println("Server esta rodando");
 
         while (true) {
             try {
-                DatagramPacket receiveData = new DatagramPacket(infoBytes, infoBytes.length);
-                DatagramPacket receiveData2 = new DatagramPacket(infoBytes2, infoBytes2.length);
+                DatagramPacket mensagem = new DatagramPacket(infoBytes, infoBytes.length);
+                DatagramPacket opcaoEscolhida = new DatagramPacket(infoBytes2, infoBytes2.length);
 
                 //Recebe dados
-                serverSocket.receive(receiveData);
-                serverSocket.receive(receiveData2);
+                serverSocket.receive(mensagem);
+                serverSocket.receive(opcaoEscolhida);
 
                 //Após receber inicia thread
-                Mensagem thread = new Mensagem(receiveData, receiveData2, serverSocket, infoBytes, infoBytes2);
+                Mensagem thread = new Mensagem(mensagem, opcaoEscolhida, serverSocket, infoBytes, infoBytes2);
                 thread.start();
 
                 //Recebe dados
-                serverSocket.receive(receiveData);
+                serverSocket.receive(mensagem);
 
             } catch (Exception e) {
                 throw new Exception(e.fillInStackTrace());
