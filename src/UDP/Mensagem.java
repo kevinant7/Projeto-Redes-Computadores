@@ -72,6 +72,20 @@ public class Mensagem extends Thread {
             //Responsavel pela mensagem 4.duplicada
             case "4":
                 System.out.println("Mensagem id " + contador + " recebida de forma duplicada");
+                byte[] receiveByte = new byte[1024];
+                DatagramPacket receive = new DatagramPacket(receiveByte, receiveByte.length);
+                try {
+                    datagramSocket.setSoTimeout(10000);
+                    datagramSocket.receive(receive);
+                    datagramSocket.receive(receive);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                try {
+                    this.datagramSocket.send(sendPacket);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
                 contador++;
                 break;
 

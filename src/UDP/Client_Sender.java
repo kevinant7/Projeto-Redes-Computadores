@@ -12,7 +12,7 @@ public class Client_Sender {
     static String buf;
     public static int contador = 0;
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException, InterruptedException {
         ArrayList<String> mensagemUsuario = new ArrayList<>();
         ArrayList<String> opcaoEscolhida = new ArrayList<>();
 
@@ -95,10 +95,11 @@ public class Client_Sender {
 
                 //Responsavel pela mensagem 4.duplicada
                 case "4":
-                    //byte[] sendDuplicadaByte = numeroEscolhido.getBytes();
-                    //DatagramPacket sendDuplicada = new DatagramPacket(sendDuplicadaByte, sendDuplicadaByte.length, ip, PORT);
-                    //clientSocket.send(sendDuplicada);
-                    //clientSocket.send(sendDuplicada);
+                    byte[] sendDuplicadaByte = numeroEscolhido.getBytes();
+                    DatagramPacket sendDuplicada = new DatagramPacket(sendDuplicadaByte, sendDuplicadaByte.length, ip, PORT);
+                    clientSocket.wait(5000);
+                    clientSocket.send(sendDuplicada);
+                    clientSocket.send(sendDuplicada);
                     break;
 
                 //Responsavel pelas mensagens 5. normmal
