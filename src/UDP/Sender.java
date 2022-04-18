@@ -5,7 +5,7 @@ import java.net.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class Client_Sender {
+public class Sender {
 
     private final static int PORT = 9876;
     public static String host = "127.0.0.1";
@@ -16,7 +16,7 @@ public class Client_Sender {
         ArrayList<String> mensagemUsuario = new ArrayList<>();
         ArrayList<String> opcaoEscolhida = new ArrayList<>();
 
-        //Cria Array com identificadore das mensagens a serem reenviadas
+        //Cria Array com identificador das mensagens a serem reenviadas
         ArrayList<Integer> indiceMensagensPerdias = new ArrayList<>();
 
         HashMap<String, String> opcoes = new HashMap<>();
@@ -37,7 +37,7 @@ public class Client_Sender {
         while ((buf = entrada.readLine()) != null) {
             mensagemUsuario.add(buf);
 
-            //Envia mensagem
+            //Envia mensagem e seu formato, igual recebido do usuário
             byte[] mensagem = buf.getBytes();
             DatagramPacket sendPacket = new DatagramPacket(mensagem, mensagem.length, ip, PORT);
             clientSocket.send(sendPacket);
@@ -78,7 +78,7 @@ public class Client_Sender {
                 //Responsável pela perda de mensagem. Usando temporizador e timeout
                 case "2":
                     try {
-                        clientSocket.setSoTimeout(6000);
+                        clientSocket.setSoTimeout(10000);
                         byte[] receiveBuf = new byte[1024];
                         DatagramPacket receivePacket = new DatagramPacket(receiveBuf, receiveBuf.length);
                         clientSocket.receive(receivePacket);
@@ -97,7 +97,6 @@ public class Client_Sender {
                 case "4":
                     byte[] sendDuplicadaByte = numeroEscolhido.getBytes();
                     DatagramPacket sendDuplicada = new DatagramPacket(sendDuplicadaByte, sendDuplicadaByte.length, ip, PORT);
-                    clientSocket.wait(5000);
                     clientSocket.send(sendDuplicada);
                     clientSocket.send(sendDuplicada);
                     break;

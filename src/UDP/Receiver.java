@@ -2,7 +2,7 @@ package UDP;
 
 import java.net.*;
 
-public class Server_Receiver extends Thread {
+public class Receiver extends Thread {
 
     private static final int PORT = 9876;
     public DatagramSocket datagramSocket;
@@ -10,7 +10,7 @@ public class Server_Receiver extends Thread {
     public String info;
     public InetAddress ip;
 
-    public Server_Receiver(DatagramSocket datagramSocket, DatagramPacket datagramPacket, byte[] infoBytes) {
+    public Receiver(DatagramSocket datagramSocket, DatagramPacket datagramPacket, byte[] infoBytes) {
         this.datagramSocket = datagramSocket;
         this.info = new String(infoBytes, 0, datagramPacket.getLength());
         this.port = datagramPacket.getPort();

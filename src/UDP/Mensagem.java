@@ -47,14 +47,27 @@ public class Mensagem extends Thread {
 
         switch (opcaoEscolhidaRecebida) {
 
-            //Responsavel pela mensagem 1. Lenta
+            //Responsavel pela mensagem 1. Lenta através de temporizador
             case "1":
+
+                new Thread(new Runnable() {
+                    public void run() {
+                    }
+                });
+                try {
+                    sleep(5000);
+                } catch (InterruptedException ex) {
+                    ex.printStackTrace();
+                    break;
+                }
+
                 System.out.println("Mensagem id " + contador + " recebida na ordem, entregando para a camada de aplicação.");
                 try {
                     this.datagramSocket.send(sendPacket);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
+
                 contador++;
                 break;
 
@@ -63,13 +76,13 @@ public class Mensagem extends Thread {
                 contador++;
                 break;
 
-            //Responsavel pela mensagem 3.fora de ordem
+            //Responsavel pelo tratamento de mensagem 3.fora de ordem
             case "3":
                 System.out.println("Mensagem id " + contador + " recebida fora de ordem, ainda não recebidos os identificadores [lista de identificadores não recebidos]");
                 contador++;
                 break;
 
-            //Responsavel pela mensagem 4.duplicada
+            //Responsavel pelo tratamento de mensagem 4.duplicada
             case "4":
                 System.out.println("Mensagem id " + contador + " recebida de forma duplicada");
                 byte[] receiveByte = new byte[1024];
@@ -89,6 +102,7 @@ public class Mensagem extends Thread {
                 contador++;
                 break;
 
+            //Responsavel pelo tratamento de mensagem 5.normar
             case "5":
                 System.out.println("Mensagem id " + contador + " recebida na ordem, entregando para a camada de aplicação.");
                 byte[] sendNormal = new byte[1024];
